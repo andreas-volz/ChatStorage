@@ -1,0 +1,21 @@
+log4j.rootLogger=WARN, A1, R
+log4j.appender.A1=org.apache.log4j.ConsoleAppender
+log4j.appender.A1.layout=org.apache.log4j.PatternLayout
+
+log4j.appender.R=org.apache.log4j.RollingFileAppender
+log4j.appender.R.layout=org.apache.log4j.PatternLayout
+log4j.appender.R.layout.ConversionPattern=%d %20.20F:%-4L %-5p %c - %m%n
+log4j.appender.R.File=chatstorage.log
+log4j.appender.R.MaxFileSize=10MB
+log4j.appender.R.MaxBackupIndex=5
+
+# Print the date in ISO 8601 format
+log4j.appender.A1.layout.ConversionPattern=%d %20.20F:%-4L %-5p %c - %m%n
+
+# Print only messages of level WARN or above in the package com.foo.
+#log4j.logger.ChatStorage=TRACE
+log4j.logger.ChatStorage.ChatFormatAStreamParser=TRACE
+#log4j.logger.ChatStorage.ImportManager=TRACE
+
+
+

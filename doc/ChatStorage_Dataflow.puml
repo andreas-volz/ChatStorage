@@ -1,0 +1,33 @@
+@startuml
+title ChatStorage Data / Run Flow
+
+actor User
+
+participant "File / Raw Chat Data" as RawData
+participant "ImportManager" as ImportMgr
+participant "AbstractChatParser / FormatParser" as Parser
+participant "ChatImportContext" as Context
+participant "Repositories / PersistenceManager" as DB
+participant "Core API" as API
+participant "UI / Consumer" as UI
+
+== Case 1: Import -> Normalize -> DB ==
+User -> RawData: provide chat files
+RawData -> ImportMgr: start import
+ImportMgr -> Parser: select parser based on format
+Parser -> Context: parse raw file into normalized objects
+Context -> DB: save Chats, Messages, Users, Media
+DB --> Context: confirm persistence
+Context --> Parser: acknowledge
+Parser --> ImportMgr: parsing complete
+ImportMgr --> User: import finished
+
+== Case 2: DB -> API -> Output ==
+User -> API: request chats / messages
+API -> DB: query repositories
+DB --> API: return chat objects
+API -> UI: provide structured data
+UI --> User: display chats / messages
+
+@enduml
+

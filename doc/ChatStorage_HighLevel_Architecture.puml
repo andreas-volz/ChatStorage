@@ -1,0 +1,145 @@
+@startuml
+title ChatStorage – High Level Architecture
+
+skinparam packageStyle rectangle
+skinparam componentStyle rectangle
+
+' =======================
+' Public API
+' =======================
+package "Public API (include/chatstorage)" {
+    interface ChatStorage
+    interface ChatContext
+    interface Chat
+    interface Message
+    interface User
+    interface Media
+    interface ChatSource
+}
+
+' =======================
+' Core Domain
+' =======================
+package "Core Domain (core)" {
+    class ChatStorage
+    class ChatContext
+    class Chat
+    class Message
+    class User
+    class Media
+}
+
+' =======================
+' Importer Layer
+' =======================
+package "Importer" {
+    class ImportManager
+    class ChatImportContext
+
+    abstract class AbstractChatParser
+    class FileBasedFormatAParser
+    class ChatParserFactory
+
+    class ImportChat
+    class ImportMessage
+    class ImportUser
+    class ImportMedia
+}
+
+' =======================
+' Persistence / Database
+' =======================
+package "Database" {
+    class PersistenceManager
+    class SQLiteConnection
+    class Statement
+
+    class ChatRepository
+    class MessageRepository
+    class UserRepository
+    class MediaRepository
+
+    class ChatRow
+    class MessageRow
+    class UserRow
+    class MediaRow
+}
+
+' =======================
+' Common / Infrastructure
+' =======================
+package "Common / Infrastructure" {
+    class Logger
+    class FileUtil
+    class StringUtil
+    class Platform
+    class OptionParser
+    class Pacman
+}
+
+' =======================
+' API -> Core
+' =======================
+ChatStorage <|.. ChatStorage
+ChatContext <|.. ChatContext
+Chat <|.. Chat
+Message <|.. Message
+User <|.. User
+Media <|.. Media
+
+' =======================
+' Core Dependencies
+' =======================
+ChatStorage --> ChatContext
+ChatContext --> Chat
+Chat --> Message
+Chat --> User
+Chat --> Media
+
+ChatStorage --> PersistenceManager
+ChatStorage --> ImportManager
+
+' =======================
+' Importer Flow
+' =======================
+ImportManager --> ChatParserFactory
+ChatParserFactory --> AbstractChatParser
+AbstractChatParser <|-- FileBasedFormatAParser
+
+ImportManager --> ChatImportContext
+ImportManager --> ImportChat
+ImportManager --> ImportMessage
+ImportManager --> ImportUser
+ImportManager --> ImportMedia
+
+ImportChat --> ChatRepository
+ImportMessage --> MessageRepository
+ImportUser --> UserRepository
+ImportMedia --> MediaRepository
+
+' =======================
+' Persistence Layer
+' =======================
+PersistenceManager --> SQLiteConnection
+PersistenceManager --> Statement
+
+ChatRepository --> ChatRow
+MessageRepository --> MessageRow
+UserRepository --> UserRow
+MediaRepository --> MediaRow
+
+ChatRepository --> SQLiteConnection
+MessageRepository --> SQLiteConnection
+UserRepository --> SQLiteConnection
+MediaRepository --> SQLiteConnection
+
+' =======================
+' Common Usage
+' =======================
+Importer ..> FileUtil
+Importer ..> StringUtil
+Database ..> Logger
+Core ..> Logger
+
+@enduml
+
